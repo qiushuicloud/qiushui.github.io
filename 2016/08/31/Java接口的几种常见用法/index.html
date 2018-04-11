@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/telescope_32x32.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/telescope_16x16.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="接口（interface）对于面向对象编程来说是一个非常重要的概念。它是一系列方法的声明，却没有具体实现。有些编程语言，比如swift，把接口解释成“协议（protocol）”，我觉得也是非常的恰当的，接口就是对方法制定的一套规范。 本人经过从事多年的java开发工作，以及自身对面向对象编程思想的理解，总结了以下几点接口的常见用法，希望可以对新手的理解有所帮助。">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java接口的几种常见用法">
+<meta property="og:url" content="http://qiushuicloud.com/2016/08/31/Java接口的几种常见用法/index.html">
+<meta property="og:site_name" content="秋水云记">
+<meta property="og:description" content="接口（interface）对于面向对象编程来说是一个非常重要的概念。它是一系列方法的声明，却没有具体实现。有些编程语言，比如swift，把接口解释成“协议（protocol）”，我觉得也是非常的恰当的，接口就是对方法制定的一套规范。 本人经过从事多年的java开发工作，以及自身对面向对象编程思想的理解，总结了以下几点接口的常见用法，希望可以对新手的理解有所帮助。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-11T06:47:24.626Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java接口的几种常见用法">
+<meta name="twitter:description" content="接口（interface）对于面向对象编程来说是一个非常重要的概念。它是一系列方法的声明，却没有具体实现。有些编程语言，比如swift，把接口解释成“协议（protocol）”，我觉得也是非常的恰当的，接口就是对方法制定的一套规范。 本人经过从事多年的java开发工作，以及自身对面向对象编程思想的理解，总结了以下几点接口的常见用法，希望可以对新手的理解有所帮助。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://qiushuicloud.com/2016/08/31/Java接口的几种常见用法/"/>
+
+
+
+
+
+  <title>Java接口的几种常见用法 | 秋水云记</title>
+  
+
+
+
+
+
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aplayer/1.6.0/APlayer.min.js"></script>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋水云记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录生活 记录学习</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://qiushuicloud.com/2016/08/31/Java接口的几种常见用法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="秋水 Studio">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar2.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋水云记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java接口的几种常见用法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-08-31T10:11:38+08:00">
+                2016-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/08/31/Java接口的几种常见用法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2016/08/31/Java接口的几种常见用法/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>接口（interface）对于面向对象编程来说是一个非常重要的概念。它是一系列方法的声明，却没有具体实现。有些编程语言，比如swift，把接口解释成“协议（protocol）”，我觉得也是非常的恰当的，接口就是对方法制定的一套规范。</p>
+<p>本人经过从事多年的java开发工作，以及自身对面向对象编程思想的理解，总结了以下几点接口的常见用法，希望可以对新手的理解有所帮助。</p>
+<a id="more"></a>
+<h4 id="作为对类内执行流程的具体描述"><a href="#作为对类内执行流程的具体描述" class="headerlink" title="作为对类内执行流程的具体描述"></a>作为对类内执行流程的具体描述</h4><p>这是接口的最根本的作用。有时候类内部流程的某一个环节，并不是由此类自己决定的。类并不知道在这一步时具体会执行什么内容。所以需要在此处设置一枚接口，提供对外界的扩展。</p>
+<p>对于这个功能有一个非常好的范例。</p>
+<p>一个秒表类：用于测量执行某一段代码执行所需的时间。</p>
+<p>初步的代码类似于下面这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stopwatch</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> deltaTime;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        deltaTime = <span class="number">0L</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getDeltaTime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> deltaTime;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">        deltaTime = System.currentTimeMillis() - startTime;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而使用Stopwatch的代码类似于这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">  Stopwatch stopwatch = <span class="keyword">new</span> Stopwatch();</span><br><span class="line">  stopwatch.clear();	<span class="comment">//时间清零</span></span><br><span class="line">  stopwatch.start();	<span class="comment">//开始运行</span></span><br><span class="line">  System.out.printf(<span class="string">"time: %dms\n"</span>,stopwatch.getDeltaTime());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么我们知道对于秒表这个类本身，它并不能决定自己在do something那个位置将会测量什么内容的代码。</p>
+<p>也就是说此处代码将会由<code>Stopwatch</code>的外部决定。所以此处可以商定一个协议，也就是接口。<code>Stopwatch</code>决定自己开放出一个接口叫<code>NeedMonitoringProgram</code>需要监控的程序，其中doProgram()方法就是执行需要被监控的代码。外部在使用<code>Stopwatch</code>时只需要去实现<code>NeedMonitoringProgram</code>接口也就定义好了需要监测的代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">NeedMonitoringProgram</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">doProgram</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>给<code>Stopwatch</code>赋予<code>NeedMonitoringProgram</code>对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stopwatch</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> deltaTime;</span><br><span class="line">    <span class="keyword">private</span> NeedMonitoringProgram program;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setProgram</span><span class="params">(NeedMonitoringProgram program)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.program = program;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line">        program.doProgram();</span><br><span class="line">        deltaTime = System.currentTimeMillis() - startTime;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">NeedMonitoringProgram</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">doProgram</span><span class="params">()</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//省略clear()和getDeltaTime()方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>模拟测量1到1000000叠加求和所需时间</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Stopwatch stopwatch = <span class="keyword">new</span> Stopwatch();</span><br><span class="line">Stopwatch.NeedMonitoringProgram program = <span class="keyword">new</span> Stopwatch.NeedMonitoringProgram() &#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doProgram</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> number = <span class="number">1_000_000</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= number; i++) &#123;</span><br><span class="line">      sum += i;</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.printf(<span class="string">"sum: %d\n"</span>, sum);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">stopwatch.setProgram(program);</span><br><span class="line">stopwatch.clear();</span><br><span class="line">stopwatch.start();</span><br><span class="line">System.out.printf(<span class="string">"time: %dms\n"</span>,stopwatch.getDeltaTime());</span><br></pre></td></tr></table></figure>
+<p>假如说待测代码是需要外部参数的，并且也需要返回给外部执行结果的。也可以把接口方法改进一下。</p>
+<p>添加一个<code>Param</code>类来存储参数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Param params = <span class="keyword">new</span> Param();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addParam</span><span class="params">(String key, Object value)</span> </span>&#123;</span><br><span class="line">  	params.put(key, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">NeedMonitoringProgram</span>&lt;<span class="title">RETURN_OBJECT</span>&gt; </span>&#123;</span><br><span class="line">  <span class="function">RETURN_OBJECT <span class="title">doProgram</span><span class="params">(Param params)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Param</span> <span class="keyword">extends</span> <span class="title">HashMap</span>&lt;<span class="title">String</span>, <span class="title">Object</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>start方法也可以直接加入<code>NeedMonitoringProgram</code>对象，减少使用时的步骤。<br>并且<code>NeedMonitoringProgram</code>类的泛型指定了返回类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">start</span><span class="params">(NeedMonitoringProgram&lt;T&gt; program)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> startTime = System.currentTimeMillis();</span><br><span class="line">  T returnObject = program.doProgram(params);</span><br><span class="line">  deltaTime = System.currentTimeMillis() - startTime;</span><br><span class="line">  <span class="keyword">return</span> returnObject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在执行start()之前使用addParam()给代码赋值。而start()也会返回代码执行的结果。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Stopwatch stopwatch = <span class="keyword">new</span> Stopwatch();</span><br><span class="line">stopwatch.clear();</span><br><span class="line">stopwatch.addParam(<span class="string">"number"</span>, <span class="number">1_000_000</span>);</span><br><span class="line"><span class="keyword">int</span> sum = stopwatch.start(<span class="keyword">new</span> Stopwatch.NeedMonitoringProgram&lt;Integer&gt;() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">doProgram</span><span class="params">(Stopwatch.Param params)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">int</span> number = (Integer)params.get(<span class="string">"number"</span>);</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= number; i++) &#123;</span><br><span class="line">      	sum += i;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> sum;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line">System.out.printf(<span class="string">"sum: %d\n"</span>, sum);</span><br><span class="line">System.out.printf(<span class="string">"time: %dms\n"</span>,stopwatch.getDeltaTime());</span><br></pre></td></tr></table></figure>
+<p>运用JDK8的lambda表达式甚至可以缩写为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sum = stopwatch.start(params -&gt; &#123;</span><br><span class="line">  <span class="keyword">int</span> s = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">int</span> number = (Integer)params.get(<span class="string">"number"</span>);</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= number; i++) &#123;</span><br><span class="line">    s += i;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>虽然java没有函数对象这一概念，但是使用lambda可以充分表达一种函数式编程的思想，在这里接口即等同于代表了一个函数对象。</p>
+<p>以上是接口最最根本的功能，广泛运用在AWT、Swing、Android这类图形化程序中。像XXXListener这些处理控件事件的接口都是运用了此功能。</p>
+<h4 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h4><p>可以把具体子类对象都当作父类来看，屏蔽不同子类对象之间的差异。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">implements</span> <span class="title">Animal</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"I'm a cat."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">implements</span> <span class="title">Animal</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"I'm a dog."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">  Animal[] animals = <span class="keyword">new</span> Animal[]&#123;<span class="keyword">new</span> Cat(), <span class="keyword">new</span> Dog()&#125;;</span><br><span class="line">  <span class="keyword">for</span> (Animal animal : animals) &#123;</span><br><span class="line">    animal.sayHello();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这里把Cat和Dog都一视同仁的放入了Animal的数组内，并且批量处理。多态的功能其实和抽象类（abstract class）相同。</p>
+<h4 id="用于隐藏方法的具体实现过程"><a href="#用于隐藏方法的具体实现过程" class="headerlink" title="用于隐藏方法的具体实现过程"></a>用于隐藏方法的具体实现过程</h4><p>一个简单的Dao</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserDao</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">  	<span class="function">User <span class="title">findUser</span><span class="params">(<span class="keyword">int</span> id)</span></span>;</span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">addUser</span><span class="params">(User user)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">updateUser</span><span class="params">(User user)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">deleteUser</span><span class="params">(<span class="keyword">int</span> id)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个<code>DaoFactory</code>工厂类代表某一框架内部生成Dao的逻辑（超简化）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DaoFactory</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">  	<span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">getDaoInstance</span><span class="params">(Class&lt;T&gt; clazz)</span> </span>&#123;</span><br><span class="line">     	<span class="keyword">if</span>(clazz == UserDao.class) &#123;</span><br><span class="line">          	<span class="keyword">return</span> <span class="keyword">new</span> UserDaoImpl();</span><br><span class="line">     	&#125; <span class="keyword">else</span> <span class="keyword">if</span>(……) &#123;</span><br><span class="line">          </span><br><span class="line">     	&#125;</span><br><span class="line">  	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么我们在使用该框架时，只需要从<code>DaoFactory</code>中通过Dao的类型获得该Dao的具体实现对象。</p>
+<p>我们只关心该Dao接口有哪些我们可以用的方法，而不会去关心这个Dao内部是怎么实现增删改查的。拿着这个Dao对象我们就可以去完成数据库的操作。也就是说接口为我们屏蔽了方法的具体实现，屏蔽了具体的实现类中一些杂乱无章的，对于使用者来说无用的中间方法。</p>
+<h4 id="暴露分布式服务"><a href="#暴露分布式服务" class="headerlink" title="暴露分布式服务"></a>暴露分布式服务</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">XXXService</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在大型网站项目中，底层的服务都是基于分布式部署的。比如说Dubbo框架，在分布式项目中，接口和实现是分离于两个子项目中的。分布式的优势在于，通过架设多台服务提供者（provider）维持了服务提供的稳定性。只要不是所有服务提供者挂机，服务消费者（consumer）依然可以得到稳定的服务。对于服务消费者来说它并不关心服务是由谁提供的，只关心有哪些服务可以用，所以接口既屏蔽了方法的具体实现，甚至还可以接来自不同服务提供者的服务。在这里，接口起到了一个协议的作用，消费者需要哪些服务，由接口描述，同时提供者根据接口实现了自己的处理服务逻辑。</p>
+<h4 id="赋予类某种能力"><a href="#赋予类某种能力" class="headerlink" title="赋予类某种能力"></a>赋予类某种能力</h4><p>我们常常会遇到一些诸如XXXable，以able结尾的类</p>
+<p>比如说<code>java.io.Serializable</code>这是赋予了类可序列化的能力</p>
+<p>我们自己也可以写给类赋予能力的接口以及实现。</p>
+<p>做过微信支付的应该都知道，对接微信支付需要发送包含xml字符串的HTTP请求。</p>
+<p>那么就可以对微信支付功能封装一个客户端（Client）</p>
+<p>那么大致步骤如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WechatClient</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 统一下单</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unifiedOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//1. 生成xml</span></span><br><span class="line">      	<span class="comment">//2. 发送HTTP请求</span></span><br><span class="line">      	<span class="comment">//3. 处理请求结果</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来给客户端类赋予可发送HTTP请求的能力，声明一个接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">HttpSendable</span> </span>&#123;</span><br><span class="line">	<span class="comment">//发送GET请求</span></span><br><span class="line">    <span class="function">HttpResponse <span class="title">getHttps</span><span class="params">(String url)</span></span>;</span><br><span class="line">	<span class="comment">//发送包含raw富文本的POST请求</span></span><br><span class="line">    <span class="function">HttpResponse <span class="title">postHttps</span><span class="params">(String url, String raw)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>HttpSendable</code>顾名思义就是可发送HTTP请求的能力</p>
+<p>那么给客户端加上这个能力</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WechatClient</span> <span class="keyword">implements</span> <span class="title">HttpSendable</span></span></span><br></pre></td></tr></table></figure>
+<p>这个能力的实现可以使用抽象父类实现，不会造成次要代码污染主要类的逻辑</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpSender</span> <span class="keyword">implements</span> <span class="title">HttpSendable</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> HttpResponse <span class="title">getHttps</span><span class="params">(String url)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> HttpResponse <span class="title">postHttps</span><span class="params">(String url, String raw)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>HttpSender</code>就是HTTP的发送者，当然它也有发送HTTP的能力<code>HttpSendable</code>然后客户端继承了它</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WechatClient</span> <span class="keyword">extends</span> <span class="title">HttpSender</span> <span class="keyword">implements</span> <span class="title">HttpSendable</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 统一下单</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">unifiedOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      	<span class="comment">//1. 生成xml</span></span><br><span class="line">      	String xml = <span class="string">""</span>;<span class="comment">//代码略</span></span><br><span class="line">      	<span class="comment">//2. 发送HTTP请求</span></span><br><span class="line">        HttpResponse response = <span class="keyword">super</span>.postHttps(<span class="string">"https://"</span>, xml);</span><br><span class="line">      	<span class="comment">//3. 处理请求结果</span></span><br><span class="line">      	<span class="comment">//代码略</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>像这样写代码，是不是会增加代码的可理解性了呢？</p>
+<h4 id="作为常量接口"><a href="#作为常量接口" class="headerlink" title="作为常量接口"></a>作为常量接口</h4><p>一般老java程序员都喜欢这么用，包括JDK内部也有这么用的。把一些常量扔在接口里面。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//申请状态常量</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ApplyStatusContants</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String STATIC_UNTREATED = <span class="string">"STATIC_UNTREATED"</span>;<span class="comment">//未处理</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String STATIC_ACCEPT = <span class="string">"STATIC_ACCEPT"</span>; <span class="comment">//通过</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String STATIC_REJECT = <span class="string">"STATIC_REJECT"</span>; <span class="comment">//拒绝</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过自从JDK1.5以后新增了enum枚举类型。我们就不需要常量接口了，可以如下方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> ApplyStatus &#123;</span><br><span class="line">  	UNTREATED, ACCEPT, REJECT</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简单粗暴。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/06/7-盘点springmvc的常用接口之Converter（下篇）/" rel="next" title="7.盘点springmvc的常用接口之Converter（下篇）">
+                <i class="fa fa-chevron-left"></i> 7.盘点springmvc的常用接口之Converter（下篇）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar2.jpg"
+                alt="秋水 Studio" />
+            
+              <p class="site-author-name" itemprop="name">秋水 Studio</p>
+              <p class="site-description motion-element" itemprop="description">后端Java工程师</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/developframework" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:408000511@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+<div class="aplayer" data-id="374515123" data-server="netease" data-type="playlist" data-autoplay="true" data-mode="random"></div>
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#作为对类内执行流程的具体描述"><span class="nav-number">1.</span> <span class="nav-text">作为对类内执行流程的具体描述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多态"><span class="nav-number">2.</span> <span class="nav-text">多态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#用于隐藏方法的具体实现过程"><span class="nav-number">3.</span> <span class="nav-text">用于隐藏方法的具体实现过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#暴露分布式服务"><span class="nav-number">4.</span> <span class="nav-text">暴露分布式服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#赋予类某种能力"><span class="nav-number">5.</span> <span class="nav-text">赋予类某种能力</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#作为常量接口"><span class="nav-number">6.</span> <span class="nav-text">作为常量接口</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">秋水 Studio</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://qiushuicloud.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://qiushuicloud.com/2016/08/31/Java接口的几种常见用法/';
+          this.page.identifier = '2016/08/31/Java接口的几种常见用法/';
+          this.page.title = 'Java接口的几种常见用法';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://qiushuicloud.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/meting@1.0.1/dist/Meting.min.js"></script>
+</body>
+</html>
