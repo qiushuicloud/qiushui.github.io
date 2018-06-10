@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="秋水云记">
 <meta property="og:description" content="Maven的核心仅仅定义了抽象的生命周期，具体的任务是交由插件完成，插件以独立的构件形式存在。Maven的生命周期与插件项目绑定，用以完成实际的构件任务。项目的构建实际上是在执行各个阶段时调用各自绑定的插件来具体完成构建步骤的。 一个Maven插件可以包含多个目标（Goal），每个目标完成一个任务。 Maven的插件有两种用法，一种是直接在命令行使用，比如mvn release:prepare 对">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-06-10T14:08:10.669Z">
+<meta property="og:updated_time" content="2018-06-10T14:19:41.188Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Maven的常用插件">
 <meta name="twitter:description" content="Maven的核心仅仅定义了抽象的生命周期，具体的任务是交由插件完成，插件以独立的构件形式存在。Maven的生命周期与插件项目绑定，用以完成实际的构件任务。项目的构建实际上是在执行各个阶段时调用各自绑定的插件来具体完成构建步骤的。 一个Maven插件可以包含多个目标（Goal），每个目标完成一个任务。 Maven的插件有两种用法，一种是直接在命令行使用，比如mvn release:prepare 对">
@@ -374,7 +374,7 @@
 <tr>
 <th>插件（plugin）</th>
 <th>插件目标（goal）</th>
-<th>生命周期</th>
+<th>生命周期（life cycle）</th>
 <th>阶段（phase）</th>
 <th>执行任务（task）</th>
 </tr>
@@ -459,6 +459,7 @@
 </tr>
 </tbody>
 </table>
+<a id="more"></a>
 <h2 id="Maven的常用插件"><a href="#Maven的常用插件" class="headerlink" title="Maven的常用插件"></a>Maven的常用插件</h2><p>maven插件在pom里的配置格式</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">    	<span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 是否让子项目继承该插件 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">inherited</span>&gt;</span>true<span class="tag">&lt;/<span class="name">inherited</span>&gt;</span></span><br><span class="line">        	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>插件groupId<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>插件artifactId<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>插件version<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">id</span>&gt;</span>标识符<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">phase</span>&gt;</span>绑定阶段<span class="tag">&lt;/<span class="name">phase</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">goal</span>&gt;</span>目标<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">            	<span class="comment">&lt;!-- 设置execution下列goals列表的设置，而不是插件所有的goals的设置 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <h3 id="maven-clean-plugin"><a href="#maven-clean-plugin" class="headerlink" title="maven-clean-plugin"></a>maven-clean-plugin</h3><p>默认绑定阶段： <code>clean:clean</code></p>
@@ -471,9 +472,26 @@
 <li><p><code>project.build.testOutputDirectory</code></p>
 </li>
 <li><p><code>project.reporting.outputDirectory</code></p>
-<p>| 目标        |                      |<br>| ———– | ——————– |<br>| clean:clean | 清理上一次构建的文件 |<br>| clean:help  | 显示帮助信息         |</p>
 </li>
 </ul>
+<table>
+<thead>
+<tr>
+<th>目标</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clean:clean</td>
+<td>清理上一次构建的文件</td>
+</tr>
+<tr>
+<td>clean:help</td>
+<td>显示帮助信息</td>
+</tr>
+</tbody>
+</table>
 <h4 id="同时删除自定义的文件"><a href="#同时删除自定义的文件" class="headerlink" title="同时删除自定义的文件"></a>同时删除自定义的文件</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">filesets</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">fileset</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">directory</span>&gt;</span>some/relative/path<span class="tag">&lt;/<span class="name">directory</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">includes</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.tmp<span class="tag">&lt;/<span class="name">include</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">include</span>&gt;</span>**/*.log<span class="tag">&lt;/<span class="name">include</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">includes</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">excludes</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>**/important.log<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">exclude</span>&gt;</span>**/another-important.log<span class="tag">&lt;/<span class="name">exclude</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">excludes</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">followSymlinks</span>&gt;</span>false<span class="tag">&lt;/<span class="name">followSymlinks</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">fileset</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">filesets</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <h4 id="跳过清理"><a href="#跳过清理" class="headerlink" title="跳过清理"></a>跳过清理</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">skip</span>&gt;</span>true<span class="tag">&lt;/<span class="name">skip</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p><code>mvn clean -Dmaven.clean.skip=true</code></p>
