@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/telescope_32x32.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/telescope_16x16.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Logstash,Logback," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="​    在使用微服务架构时，将应用的日志以文件的形式记录在分散的机器上，不方便错误日志的查询。如果能把日志文件统一输出到某一个地方，集中存储那就再好不过了。 使用ELK（Elasticsearch + Logstash + Kibana）架构是解决分布式日志存储是最优的选择。然而有的时候并不想去使用Elasticsearch怎么办。好在Logstash提供了各种插件，可以将数据传输到多种平台。">
+<meta name="keywords" content="Logstash,Logback">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Logstash将Logback日志记录到MongoDB">
+<meta property="og:url" content="http://qiushuicloud.com/2018/08/31/使用Logstash将Logback日志记录到MongoDB/index.html">
+<meta property="og:site_name" content="秋水云记">
+<meta property="og:description" content="​    在使用微服务架构时，将应用的日志以文件的形式记录在分散的机器上，不方便错误日志的查询。如果能把日志文件统一输出到某一个地方，集中存储那就再好不过了。 使用ELK（Elasticsearch + Logstash + Kibana）架构是解决分布式日志存储是最优的选择。然而有的时候并不想去使用Elasticsearch怎么办。好在Logstash提供了各种插件，可以将数据传输到多种平台。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://qiushuicloud.com/2018/08/31/使用Logstash将Logback日志记录到MongoDB/logstash%20structure.png">
+<meta property="og:updated_time" content="2018-08-31T07:23:22.362Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Logstash将Logback日志记录到MongoDB">
+<meta name="twitter:description" content="​    在使用微服务架构时，将应用的日志以文件的形式记录在分散的机器上，不方便错误日志的查询。如果能把日志文件统一输出到某一个地方，集中存储那就再好不过了。 使用ELK（Elasticsearch + Logstash + Kibana）架构是解决分布式日志存储是最优的选择。然而有的时候并不想去使用Elasticsearch怎么办。好在Logstash提供了各种插件，可以将数据传输到多种平台。">
+<meta name="twitter:image" content="http://qiushuicloud.com/2018/08/31/使用Logstash将Logback日志记录到MongoDB/logstash%20structure.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://qiushuicloud.com/2018/08/31/使用Logstash将Logback日志记录到MongoDB/"/>
+
+
+
+
+
+  <title>使用Logstash将Logback日志记录到MongoDB | 秋水云记</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">秋水云记</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">记录生活 记录学习</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://qiushuicloud.com/2018/08/31/使用Logstash将Logback日志记录到MongoDB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="秋水 Studio">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar2.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="秋水云记">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Logstash将Logback日志记录到MongoDB</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-31T09:32:42+08:00">
+                2018-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/" itemprop="url" rel="index">
+                    <span itemprop="name">后端</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/后端/ELK/" itemprop="url" rel="index">
+                    <span itemprop="name">ELK</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/08/31/使用Logstash将Logback日志记录到MongoDB/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2018/08/31/使用Logstash将Logback日志记录到MongoDB/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>​    在使用微服务架构时，将应用的日志以文件的形式记录在分散的机器上，不方便错误日志的查询。如果能把日志文件统一输出到某一个地方，集中存储那就再好不过了。</p>
+<p>使用ELK（Elasticsearch + Logstash + Kibana）架构是解决分布式日志存储是最优的选择。然而有的时候并不想去使用Elasticsearch怎么办。好在Logstash提供了各种插件，可以将数据传输到多种平台。</p>
+<h2 id="什么是Logstash？"><a href="#什么是Logstash？" class="headerlink" title="什么是Logstash？"></a>什么是Logstash？</h2><p>Logstash是elastic公司旗下的一个产品，ELK三大件之一。它是一个数据流的管道，可以理解为将数据从一个地方传输到另一个地方的工具。使用Logstash的场景：</p>
+<ul>
+<li>数据同步，比如将mysql的数据同步到Elasticsearch</li>
+<li>日志收集</li>
+<li>触发消息队列</li>
+</ul>
+<a id="more"></a>
+<p>官网地址：<a href="https://www.elastic.co/products/logstash" target="_blank" rel="noopener">https://www.elastic.co/products/logstash</a></p>
+<h3 id="Logstash的结构"><a href="#Logstash的结构" class="headerlink" title="Logstash的结构"></a>Logstash的结构</h3><p>logstash分为三块结构：</p>
+<ul>
+<li>input  数据输入块</li>
+<li>filter  数据处理块</li>
+<li>output  数据输出块</li>
+</ul>
+<p><img src="logstash structure.png" alt=""></p>
+<p>logstash的插件都是这三大块的插件，根据不同的输入输出端平台有不同的插件。</p>
+<h2 id="安装Logstash"><a href="#安装Logstash" class="headerlink" title="安装Logstash"></a>安装Logstash</h2><p>下载地址：<a href="https://www.elastic.co/downloads/logstash" target="_blank" rel="noopener">https://www.elastic.co/downloads/logstash</a></p>
+<p>根据自己所用的平台选择压缩包类型，解压即用。</p>
+<p>运行 <code>/bin/logstash</code> 就能启动logstash</p>
+<h2 id="将Logback日志记录到MongoDB"><a href="#将Logback日志记录到MongoDB" class="headerlink" title="将Logback日志记录到MongoDB"></a>将Logback日志记录到MongoDB</h2><p>接下来记录将Logback日志记录到MongoDB的配置过程。</p>
+<h3 id="mongodb增加存储日志的数据库以及集合"><a href="#mongodb增加存储日志的数据库以及集合" class="headerlink" title="mongodb增加存储日志的数据库以及集合"></a>mongodb增加存储日志的数据库以及集合</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 切换或新建数据库</span></span><br><span class="line">&gt; use logs;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建集合</span></span><br><span class="line">&gt; db.createCollection(<span class="string">"application_logs"</span>, &#123;</span><br><span class="line">    capped: <span class="literal">true</span>,  <span class="comment">// 启用集合限制</span></span><br><span class="line">    size: <span class="number">102400</span>,  <span class="comment">// 集合数据量最大1MB		</span></span><br><span class="line">    max: <span class="number">1000</span>	   <span class="comment">// 集合数据条数最大1000条</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果mongodb开启了auth认证，就新建一个用户赋予权限</span></span><br><span class="line">&gt; db.createUser(&#123;</span><br><span class="line">    user: <span class="string">"logs"</span>, </span><br><span class="line">    pwd: <span class="string">"logs"</span>,</span><br><span class="line">    roles: [&#123;<span class="attr">role</span>: <span class="string">"readWrite"</span>, <span class="attr">db</span>: <span class="string">"application_logs"</span>&#125;]   </span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>使用<code>capped</code>参数是为了限制集合的大小，当集合大小超过size或者条数超过max时，后存的记录会把之前最老的记录覆盖，这样完全不用担心时间久了日志量超级大了。</p>
+<h3 id="配置logstash"><a href="#配置logstash" class="headerlink" title="配置logstash"></a>配置logstash</h3><p>在<code>config</code> 文件夹下新建文件<code>logbackToMongodb.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    udp &#123;</span><br><span class="line">        port =&gt; 4569</span><br><span class="line">        codec =&gt; &quot;json_lines&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">output&#123;</span><br><span class="line">    mongodb &#123;</span><br><span class="line">        uri =&gt; &quot;mongodb://logs:logs@localhost:27017/logs&quot;</span><br><span class="line">        database =&gt; &quot;logs&quot;</span><br><span class="line">        collection =&gt; &quot;application_logs&quot;</span><br><span class="line">        codec =&gt; &quot;json_lines&quot;</span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>input</code> 配置了使用tcp作为输入数据</p>
+<p><code>codec</code>指定了数据传输的格式</p>
+<p><code>output</code> 配置了使用mongodb作为输出数据</p>
+<p><code>uri</code> 指定了连接mongodb所需的地址和用户密码，所连数据库</p>
+<p><code>database</code>指定了数据输出的数据库</p>
+<p><code>collection</code>指定了数据输出的集合</p>
+<p>在<code>config/logstash.yml</code> 里配置使用上述配置文件，找到如下字段</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Where to fetch the pipeline configuration for the main pipeline</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="string">path.config:</span> <span class="string">../config/logbackToMongodb.conf</span></span><br></pre></td></tr></table></figure>
+<h3 id="安装mongodb插件"><a href="#安装mongodb插件" class="headerlink" title="安装mongodb插件"></a>安装mongodb插件</h3><p>配置完了仍然还不能运行，那是因为还没有安装logstash的mongodb输出插件<code>logstash-output-mongodb</code> </p>
+<p><a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-mongodb.html" target="_blank" rel="noopener">https://www.elastic.co/guide/en/logstash/current/plugins-outputs-mongodb.html</a></p>
+<p>根据官网的指示称只要执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/logstash-plugin install logstash-output-mongodb</span><br></pre></td></tr></table></figure>
+<p>就能安装插件，但是我自己试了发现不行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Validating logstash-output-mongodb</span><br><span class="line">IPAddr::InvalidAddressError: invalid address</span><br><span class="line">                  in6_addr at D:/ELK/logstash-6.4.0/vendor/jruby/lib/ruby/stdlib/ipaddr.rb:560</span><br><span class="line">                initialize at D:/ELK/logstash-6.4.0/vendor/jruby/lib/ruby/stdlib/ipaddr.rb:497</span><br><span class="line">                    sender at D:/ELK/logstash-6.4.0/vendor/jruby/lib/ruby/stdlib/resolv.rb:778</span><br><span class="line">   block in fetch_resource at D:/ELK/logstash-6.4.0/vendor/jruby/lib/ruby/stdlib/resolv.rb:532</span><br><span class="line">           block in resolv at D:/ELK/logstash-6.4.0/vendor/jruby/lib/ruby/stdlib/resolv.rb:1108</span><br><span class="line">（省略若干字）</span><br></pre></td></tr></table></figure>
+<p>后来我发现在Gemfile文件里压根没有配置logstash-output-mongodb的插件（不知道官方什么意思）</p>
+<p>既然在线安装不行那就离线安装</p>
+<p>在<a href="https://github.com/logstash-plugins/logstash-output-mongodb" target="_blank" rel="noopener">Logstash Plugins</a>里搜索找到插件<a href="https://github.com/logstash-plugins/logstash-output-mongodb" target="_blank" rel="noopener">https://github.com/logstash-plugins/logstash-output-mongodb</a></p>
+<p>去releases下载最新的插件包，我解压在了logstash目录下新建了一个plugins文件夹里</p>
+<p>编辑Gemfile文件设置依赖本地插件包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gem &quot;logstash-output-mongodb&quot;, :path =&gt; &quot;plugins/logstash-output-mongodb-3.1.4&quot;</span><br></pre></td></tr></table></figure>
+<p>再次执行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/logstash-plugin install --no-verify</span><br></pre></td></tr></table></figure>
+<p>就可以成功安装了</p>
+<p>执行了<code>bin/logstash</code>，没有报错信息就算成功启动Logstash了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Sending Logstash logs to D:/ELK/logstash-6.4.0/logs which is now configured via log4j2.properties</span><br><span class="line">[2018-08-31T14:51:11,568][WARN ][logstash.config.source.multilocal] Ignoring the &apos;pipelines.yml&apos; file because modules or command line options are specified</span><br><span class="line">[2018-08-31T14:51:12,312][INFO ][logstash.runner          ] Starting Logstash &#123;&quot;logstash.version&quot;=&gt;&quot;6.4.0&quot;&#125;</span><br><span class="line">[2018-08-31T14:51:16,805][INFO ][logstash.pipeline        ] Starting pipeline &#123;:pipeline_id=&gt;&quot;main&quot;, &quot;pipeline.workers&quot;=&gt;8, &quot;pipeline.batch.size&quot;=&gt;125, &quot;pipeline.batch.delay&quot;=&gt;50&#125;</span><br><span class="line">[2018-08-31T14:51:17,783][INFO ][logstash.pipeline        ] Pipeline started successfully &#123;:pipeline_id=&gt;&quot;main&quot;, :thread=&gt;&quot;#&lt;Thread:0x74cd8a75 run&gt;&quot;&#125;</span><br><span class="line"></span><br><span class="line">[2018-08-31T14:51:17,816][INFO ][logstash.inputs.udp      ] Starting UDP listener &#123;:address=&gt;&quot;0.0.0.0:4569&quot;&#125;</span><br><span class="line">[2018-08-31T14:51:17,851][INFO ][logstash.agent           ] Pipelines running &#123;:count=&gt;1, :running_pipelines=&gt;[:main], :non_running_pipelines=&gt;[]&#125;</span><br><span class="line">[2018-08-31T14:51:17,870][INFO ][logstash.inputs.udp      ] UDP listener started &#123;:address=&gt;&quot;0.0.0.0:4569&quot;, :receive_buffer_bytes=&gt;&quot;65536&quot;, :queue_size=&gt;&quot;2000&quot;&#125;</span><br><span class="line">[2018-08-31T14:51:18,215][INFO ][logstash.agent           ] Successfully started Logstash API endpoint &#123;:port=&gt;9600&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="配置Logback"><a href="#配置Logback" class="headerlink" title="配置Logback"></a>配置Logback</h3><p>logback需要额外使用到logstash到logback的编码器</p>
+<p>官网地址：<a href="https://github.com/logstash/logstash-logback-encoder" target="_blank" rel="noopener">https://github.com/logstash/logstash-logback-encoder</a></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>ch.qos.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logback-classic<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.logstash.logback<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>logstash-logback-encoder<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在<code>logback.xml</code>里可以选用</p>
+<ul>
+<li>TCP 方式的<code>LogstashTcpSocketAppender</code></li>
+<li>UDP方式的<code>LogstashSocketAppender</code></li>
+</ul>
+<p>UDP方式，配置如下</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span> <span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:noNamespaceSchemaLocation</span>=<span class="string">"http://www.padual.com/java/logback.xsd"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">scan</span>=<span class="string">"false"</span> <span class="attr">debug</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- logstash udp appender --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"LOGSTASH_UDP"</span> <span class="attr">class</span>=<span class="string">"net.logstash.logback.appender.LogstashSocketAppender"</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 配置发送的地址 --&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">host</span>&gt;</span>localhost<span class="tag">&lt;/<span class="name">host</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">port</span>&gt;</span>4569<span class="tag">&lt;/<span class="name">port</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">encoder</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span> <span class="attr">class</span>=<span class="string">"net.logstash.logback.encoder.LogstashEncoder"</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 额外携带的参数，这里为了记录这条日志是从哪个应用里发出的 --&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">customFields</span>&gt;</span>&#123;"application_name":"my-test-app"&#125;<span class="tag">&lt;/<span class="name">customFields</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">root</span> <span class="attr">level</span>=<span class="string">"INFO"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">appender-ref</span> <span class="attr">ref</span>=<span class="string">"LOGSTASH_UDP"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>TCP方式</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">appender</span> <span class="attr">name</span>=<span class="string">"LOGSTASH_TCP"</span> <span class="attr">class</span>=<span class="string">"net.logstash.logback.appender.LogstashTcpSocketAppender"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">destination</span>&gt;</span>localhost:4569<span class="tag">&lt;/<span class="name">destination</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">encoder</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span> <span class="attr">class</span>=<span class="string">"net.logstash.logback.encoder.LogstashEncoder"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">customFields</span>&gt;</span>&#123;"application_name":"my-test-app"&#125;<span class="tag">&lt;/<span class="name">customFields</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">encoder</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">appender</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>logstash的配置文件<code>input</code>只需要把udp改成tcp即可</p>
+<h3 id="测试效果"><a href="#测试效果" class="headerlink" title="测试效果"></a>测试效果</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogstashTest</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testLogs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		log.info(<span class="string">"info test"</span>);</span><br><span class="line">		log.warn(<span class="string">"warn test"</span>);</span><br><span class="line">		log.error(<span class="string">"error test"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行mongodb查询</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.getCollection(<span class="string">'application_logs'</span>).find(</span><br><span class="line">    &#123;<span class="attr">application_name</span>: <span class="string">'my-test-app'</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"logger_name"</span>: <span class="number">1</span>, <span class="string">"message"</span>: <span class="number">1</span>, <span class="string">"level"</span>: <span class="number">1</span>, <span class="string">"@timestamp"</span>: <span class="number">1</span>, <span class="string">"application_name"</span> : <span class="number">1</span>&#125;</span><br><span class="line">).pretty();</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">/* 1 */</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"_id"</span> : ObjectId(<span class="string">"5b88e6dbd0735ad6f7000004"</span>),</span><br><span class="line">    <span class="attr">"@timestamp"</span> : <span class="string">"\"2018-08-31T06:57:31.096Z\""</span>,</span><br><span class="line">    <span class="attr">"logger_name"</span> : <span class="string">"test.LogstashTest"</span>,</span><br><span class="line">    <span class="attr">"message"</span> : <span class="string">"error test"</span>,</span><br><span class="line">    <span class="attr">"level"</span> : <span class="string">"ERROR"</span>,</span><br><span class="line">    <span class="attr">"application_name"</span> : <span class="string">"my-test-app"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* 2 */</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"_id"</span> : ObjectId(<span class="string">"5b88e6dbd0735a6abe000005"</span>),</span><br><span class="line">    <span class="attr">"@timestamp"</span> : <span class="string">"\"2018-08-31T06:57:31.095Z\""</span>,</span><br><span class="line">    <span class="attr">"logger_name"</span> : <span class="string">"test.LogstashTest"</span>,</span><br><span class="line">    <span class="attr">"message"</span> : <span class="string">"warn test"</span>,</span><br><span class="line">    <span class="attr">"level"</span> : <span class="string">"WARN"</span>,</span><br><span class="line">    <span class="attr">"application_name"</span> : <span class="string">"my-test-app"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* 3 */</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"_id"</span> : ObjectId(<span class="string">"5b88e6dbd0735aab5c000006"</span>),</span><br><span class="line">    <span class="attr">"@timestamp"</span> : <span class="string">"\"2018-08-31T06:57:31.080Z\""</span>,</span><br><span class="line">    <span class="attr">"logger_name"</span> : <span class="string">"test.LogstashTest"</span>,</span><br><span class="line">    <span class="attr">"message"</span> : <span class="string">"info test"</span>,</span><br><span class="line">    <span class="attr">"level"</span> : <span class="string">"INFO"</span>,</span><br><span class="line">    <span class="attr">"application_name"</span> : <span class="string">"my-test-app"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在终于可以愉快的记录日志了^_^</p>
+<p>所有应用程序都将日志输出到这里，方便进行查询。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="秋水 Studio 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Logstash/" rel="tag"># Logstash</a>
+          
+            <a href="/tags/Logback/" rel="tag"># Logback</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/09/Maven的常用插件/" rel="next" title="Maven的常用插件">
+                <i class="fa fa-chevron-left"></i> Maven的常用插件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar2.jpg"
+                alt="秋水 Studio" />
+            
+              <p class="site-author-name" itemprop="name">秋水 Studio</p>
+              <p class="site-description motion-element" itemprop="description">后端Java工程师</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/developframework" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:408000511@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是Logstash？"><span class="nav-number">1.</span> <span class="nav-text">什么是Logstash？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Logstash的结构"><span class="nav-number">1.1.</span> <span class="nav-text">Logstash的结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Logstash"><span class="nav-number">2.</span> <span class="nav-text">安装Logstash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将Logback日志记录到MongoDB"><span class="nav-number">3.</span> <span class="nav-text">将Logback日志记录到MongoDB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mongodb增加存储日志的数据库以及集合"><span class="nav-number">3.1.</span> <span class="nav-text">mongodb增加存储日志的数据库以及集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置logstash"><span class="nav-number">3.2.</span> <span class="nav-text">配置logstash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装mongodb插件"><span class="nav-number">3.3.</span> <span class="nav-text">安装mongodb插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置Logback"><span class="nav-number">3.4.</span> <span class="nav-text">配置Logback</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试效果"><span class="nav-number">3.5.</span> <span class="nav-text">测试效果</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">秋水 Studio</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId=65648260";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://qiushuicloud.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://qiushuicloud.com/2018/08/31/使用Logstash将Logback日志记录到MongoDB/';
+          this.page.identifier = '2018/08/31/使用Logstash将Logback日志记录到MongoDB/';
+          this.page.title = '使用Logstash将Logback日志记录到MongoDB';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://qiushuicloud.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
