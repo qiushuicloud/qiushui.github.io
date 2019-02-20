@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="秋水云记">
 <meta property="og:description" content="耗时一天，翻阅了无数的Stackoverflow帖子和官方文档，终于解决了以下各种问题，供大家参考 Lombok的兼容Bug这个是从Java9开始就出现的老问题。在没有使用Java9带来的Jigsaw 模块化新特性时，是可以正常使用Lombok的。一旦你添加了module-info.java 开启了具名模块，Lombok将不能正常工作。 报错各种找不到符号，以及以下提示： 1java.lang.m">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-02-20T01:11:00.743Z">
+<meta property="og:updated_time" content="2019-02-20T01:16:36.586Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从Java8升级到Java11的各种坑">
 <meta name="twitter:description" content="耗时一天，翻阅了无数的Stackoverflow帖子和官方文档，终于解决了以下各种问题，供大家参考 Lombok的兼容Bug这个是从Java9开始就出现的老问题。在没有使用Java9带来的Jigsaw 模块化新特性时，是可以正常使用Lombok的。一旦你添加了module-info.java 开启了具名模块，Lombok将不能正常工作。 报错各种找不到符号，以及以下提示： 1java.lang.m">
@@ -371,6 +371,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.module.ResolutionException: Module lombok does not read a module that exports org.mapstruct.ap.spi</span><br></pre></td></tr></table></figure>
 <p>或</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lombok.javac.apt.LombokProcessor could not be initialized. Lombok will not run during this compilation: java.lang.IllegalArgumentException</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
 <h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://github.com/rzwitserloot/lombok/issues/1723" target="_blank" rel="noopener">https://github.com/rzwitserloot/lombok/issues/1723</a></p>
 <h3 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h3><p>module-info.java</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">requires</span> lombok;</span><br></pre></td></tr></table></figure>
